@@ -63,14 +63,25 @@ int main() {
     while (1 != 0) {
         show_console_cursor(false);
         char tasto = _getch();
+    if (tasto == 75)
+            {
+                x = x - 1 >= 0 ? x - 1 : x;                         //sinistra
+            }
+            else if (tasto == 77){
 
-        switch (tasto) {
-        case 75: x = x - 1 >= 0 ? x - 1 : x; break;                             #sinistra
-        case 77: x = x + 1 < W_CONSOLE ? x + 1 : x; break;                      #destra
-        case 72: y = y - 1 >= 1 ? y - 1 : y; break;                             #giù
-        case 80: y = y + 1 < H_CONSOLE ? y + 1 : y; break;                      #su
-        default:;
-        }
+                x = x + 1 < W_CONSOLE ? x + 1 : x;                  //destra
+
+            }
+            else if (tasto == 72){
+
+                y = y - 1 >= 1 ? y - 1 : y;                         //giù
+
+            }
+            else if (tasto == 80){
+
+                y = y + 1 < H_CONSOLE ? y + 1 : y;                  //su
+
+            }
 
         show_char_at(x, y, CHAR_NAVICELLA);
     }
