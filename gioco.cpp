@@ -65,10 +65,10 @@ int main() {
         char tasto = _getch();
 
         switch (tasto) {
-        case 75: x = x - 1 >= 0 ? x - 1 : x; break;
-        case 77: x = x + 1 < W_CONSOLE ? x + 1 : x; break;
-        case 72: y = y - 1 >= 1 ? y - 1 : y; break;
-        case 80: y = y + 1 < H_CONSOLE ? y + 1 : y; break;
+        case 75: x = x - 1 >= 0 ? x - 1 : x; break;                             #sinistra
+        case 77: x = x + 1 < W_CONSOLE ? x + 1 : x; break;                      #destra
+        case 72: y = y - 1 >= 1 ? y - 1 : y; break;                             #giù
+        case 80: y = y + 1 < H_CONSOLE ? y + 1 : y; break;                      #su
         default:;
         }
 
