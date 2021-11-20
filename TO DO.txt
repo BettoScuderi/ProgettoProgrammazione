@@ -1,0 +1,21 @@
+TO DO LIST
+- sistemare le cose gia' fatte e capire come trasferire nella classe GameSystem e Level
+
+- gestione delle piattaforme
+
+- gestione del salto
+
+- gestione mappa (continua o no?, generata random o no?, ...)
+
+- decidere come gestire i nemici: diversi tipi, si muovono, sparano?
+
+- gestione statistiche del Player/Enemies (io ho gia' messo _level e _exp, poi vediamo se implementarli)
+
+- gestione della difficolta' crescente con l'avanzamento nella mappa
+
+
+DUBBI
+- si puo' usare la classe <string> o dobbiamo per forza usare string.h/cstring?
+
+-le statistiche di Player e Enemy le passiamo direttamente al costruttore (come ho fatto in Enemy.cpp)
+ o facciamo una funzione a se' come in Player.cpp?
