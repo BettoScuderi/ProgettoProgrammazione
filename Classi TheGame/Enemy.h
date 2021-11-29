@@ -7,27 +7,17 @@ using namespace std;
 class Enemy
 {
 private:
-	string _name;
-	char _tile;
-/*	invece che avere il costruttore a cui passare nome e carattere del nemico,
-*	possiamo fare una sottoclasse per ogni tipo di nemico
-* 
-*	NOTA: non so se il nome lo possiamo dare con la classe string...
-*/
-
 	//stats
-	int _level;
-	int _attack;
-	int _defense;
+	//int _attack;	LA PASSIAMO SINGOLARMENTE NELLE SOTTOCLASSI
 	int _health;
-	int _expValue;
+	int _pointsValue;
 	//Position
 	int _x;
 	int _y;
 
 public:
 
-	Enemy(string name, char tile, int level, int attack, int defense, int health, int xp);
+	Enemy(/*int attack,*/ int health, int pointsValue);
 
 	int attack();
 
@@ -36,10 +26,7 @@ public:
 
 	//getters
 	void getPosition(int& x, int& y);
-	string getName() { return _name; }
-	char getTile() { return _tile; }
 	
-
 	int takeDamage(int attack);
 
 	//per far muovere i nemici, poi vediamo se farlo lol
