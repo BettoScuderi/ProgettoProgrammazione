@@ -1,15 +1,11 @@
 #include "Enemy.h"
 
 
-Enemy::Enemy(string name, char tile, int level, int attack, int defense, int health, int xp)
+Enemy::Enemy(/*int attack,*/ int health, int pointsValue)
 {
-	_name = name;
-	_tile = tile;
-	_level = level;
-	_attack = attack;
-	_defense = defense;
+	//_attack = attack; LA PASSIAMO SINGOLARMENTE NELLE SOTTOCLASSI
 	_health = health;
-	_expValue = xp;
+	_pointsValue = pointsValue;
 }
 
 
