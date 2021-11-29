@@ -6,20 +6,15 @@ class Player
 {
 private:
 	//stats
-	int _level;
 	int _health;
 	int _attack;
-	int _defense;
-	int _exp;
+	int _points;
 	//position
 	int _x;
 	int _y;
 
 public:
-	Player();
-
-	void init(int level, int health, int attack, int defense, int experience);
-	//si puo' togliere questa funzione e fare direttamente con il costruttore?
+	Player(int health, int attack);
 
 	int attack();
 
@@ -31,5 +26,5 @@ public:
 
 	int takeDamage(int attack);
 
-	void addExperience(int experience);
+	void addPoints(int points);
 };
