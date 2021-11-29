@@ -1,16 +1,9 @@
 #include "Player.h"
 
-Player::Player() {
-	// _x = start_x
-	// _y = start_y
-}
-
-void Player::init(int level, int health, int attack, int defense, int experience) {
-	_level = level;
+Player::Player(int health, int attack) {
 	_health = health;
 	_attack = attack;
-	_defense = defense;
-	_exp = experience;
+	_points = 0;
 }
 
 void Player::setPosition(int x, int y) {
@@ -21,11 +14,10 @@ void Player::setPosition(int x, int y) {
 void Player::getPosition(int& x, int& y) {
 	x = _x;
 	y = _y;
-
 }
 
 // int Player::attack() { }
 
-// void Player::addExperience(int experience) { }
+// void Player::addPoints(int points) { }
 
 // int Player::takeDamage(int attack) {	}
