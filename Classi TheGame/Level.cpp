@@ -12,7 +12,6 @@ using namespace std;
 #define H_CONSOLE 20
 #define CHAR_NAVICELLA L'\028'
 
-HANDLE gHndConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 void platform(int x, int y, int z) {
 	SHORT a = x;
