@@ -21,6 +21,7 @@ public:
 	static void Move(Player &player);
 	static void Draw(Player player);
 	static void Erase(Player player);
-	
+	static void LScrollPlayer(Player &player);
+	static void RScrollPlayer(Player& player);
 };
 
