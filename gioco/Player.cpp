@@ -4,15 +4,13 @@
 #include<iostream>
 
 void Player::Move(Player& player) {		//muove il giocatore
-	if (GetKeyState(VK_LSHIFT) < 0) {		//se shift e' premuto attiva lo scudo del giocatore
-		player._shielded = true;
+	if (GetKeyState(VK_LSHIFT) < 0 && player._shielded) {		//se shift e' premuto attiva lo scudo del giocatore
 		gioco::set_console_color(FOREGROUND_INTENSITY);
 		gioco::gotoxy(player._x + 1, player._y);
 		putchar('|');
 		gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	}
 	else {		//se il giocatore non sta attivando lo scudo in base all'input lo sposta a...
-		player._shielded = false;
 		if ((gioco::scan_output(player._x + 1, player._y) == '|')) { gioco::gotoxy(player._x + 1, player._y); putchar(' '); }
 		char sopra, sotto;
 		sopra = gioco::scan_output(player._x, player._y - 1);
@@ -24,9 +22,21 @@ void Player::Move(Player& player) {		//muove il giocatore
 			player._x++;
 		}
 		if (GetKeyState(0x57) < 0) {  //su
-			player._y = 2;
+			if (player._y == H_CONSOLE - 1 ) {
+				while (gioco::scan_output(player._x, player._y + 1) == 'T' || gioco::scan_output(player._x, player._y + 1) == ' ' && player._y>1) {
+					player._y--;
+				}
+			}
+			else {
+				while (gioco::scan_output(player._x, player._y - 1) == 'T' || gioco::scan_output(player._x, player._y - 1) == ' ' && player._y > 1) {
+					player._y--;
+			}
+				if (player._y > 2) {
+					player._y = player._y - 2;
+				}
+			}
 		}
-		if (GetKeyState(0x53) < 0 && player._y + 2 < H_CONSOLE && sotto == 'I') { //giu'
+		if (GetKeyState(0x53) < 0 && player._y + 2 < H_CONSOLE && sotto != 'T') { //giu'
 			player._y = player._y + 2;
 		}
 		while (gioco::scan_output(player._x, player._y + 1) == ' ') {		//applica la gravita' al giocatore
@@ -50,9 +60,9 @@ void Player::LScrollPlayer(Player& player) {		//sposta il giocatore di uno a sin
 	Player::Draw(player);
 }
 void Player::RScrollPlayer(Player& player) {		//sposta il giocatore di uno a destra
-	Player::Erase(player);
+	Erase(player);
 	player._x++;
-	Player::Draw(player);
+	Draw(player);
 }
 /*
 	if (GetKeyState(VK_LEFT) < 0 && gravsx) {

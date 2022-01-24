@@ -25,7 +25,7 @@ public:
 	static void Erase(Enemy& enemy);
 	static void Die(Enemy &enemy);
 	static void Sparerai(Enemy &enemy);
-	static void ZeroCounter(Enemy &enemy) { enemy._firecounter = 0; }	//azzere il contatore per sparare
+	static void ZeroCounter(Enemy &enemy) { enemy._firecounter = 0; }	//azzera il contatore per sparare
 	static void LScrollEnemy(Enemy& enemy);
 	static void RScrollEnemy(Enemy& enemy);
 };

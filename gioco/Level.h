@@ -16,8 +16,12 @@ public:
 		_xinizio = xinizio;
 		_xfine = xfine;
 		for (int i = 0; i < 10; i++) {		//creo tutti gli oggetti all'interno del livello
-			enemies[i] = new Enemy(rand()%10+xinizio, rand()%(H_CONSOLE-2) + 2, 100);
-			platforms[i] = new Platform(rand() % 5 + xinizio, rand() % 5 + (xinizio + 5), rand() % (H_CONSOLE - 4) + 2);
+			int pari = rand() % (H_CONSOLE - 4) + 2;
+			while (pari % 2) {
+				pari = rand() % (H_CONSOLE - 4) + 2;
+			}
+			platforms[i] = new Platform(rand() % 5 + xinizio, rand() % 5 + (xinizio + 5), pari);
+			enemies[i] = new Enemy(rand() % 10 + xinizio, rand() % (H_CONSOLE/2) +1, (100 - difficulty * 10));
 		}
 		for (int i = 9-difficulty; i > 0; i--) {		//in base alla difficolta' elimino un numero di nemici e piattaforme create
 			Enemy::Die(*enemies[i]);
@@ -32,4 +36,13 @@ public:
 	static void RScrollLevel(Level& level);
 	static void LScrollLevel(Level& level);
 };
+
+
+/* POWER UP
+* Stella di Super Mario
+@ Ricarica proiettili/aumento cadenza proiettili
+$ scudo
+L'\3' punti
+8 killa tutti nemici visibili
+*/
 

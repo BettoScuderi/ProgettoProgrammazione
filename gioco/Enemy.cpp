@@ -4,7 +4,7 @@
 #include <iostream>
 
 void Enemy::Draw(Enemy &enemy) {		//disegna il nemico se si trova nello schermo
-	if (!(IsDead(enemy))&&enemy._x>-1&&enemy._x<80) {
+	if (!(IsDead(enemy))&&enemy._x>-1&&enemy._x<79) {
 		gioco::gotoxy(enemy._x, enemy._y);
 		putchar(' ');
 		gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY);
@@ -14,7 +14,7 @@ void Enemy::Draw(Enemy &enemy) {		//disegna il nemico se si trova nello schermo
 	}
 }
 void Enemy::Move(Enemy &enemy) {		//applica la gravita' al nemico se si trova nello schermo
-	if(enemy._x > 0 && enemy._x < 79){
+	if (enemy._x > 0 && enemy._x < 79) {
 		while (gioco::scan_output(enemy._x, enemy._y + 1) == ' ') {
 			gioco::gotoxy(enemy._x, enemy._y);
 			putchar(' ');

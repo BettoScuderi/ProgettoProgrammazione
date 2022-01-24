@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Enemy.h"
+#include "Platform.h"
 class Bullet
 {
 private:
@@ -22,7 +23,7 @@ public:
 	static void FireBullet(Bullet& bullet, Player player);
 	static void Draw(Bullet &bullet);
 	static void Die(Bullet& bullet);
-	static void Collision(Enemy &enemy, Bullet& bullet, Player &player);
+	static void Collision(Enemy &enemy, Bullet& bullet, Player &player, Platform platform);
 	static bool IsEBullet(Bullet bullet) { return bullet._isebullet; }
 	static void FireEBullet(Bullet& bullet, Enemy enemy);
 	static void EDraw(Bullet& bullet);

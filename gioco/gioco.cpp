@@ -152,17 +152,33 @@ int assez() {
 	return z;
 }
 
-void Tail_ins(lvlptr &tail) {		//genera un nuovo livello messo per ultimo e sposta tail in modo da puntare sempre l'utlimo
+int bilist_length(lvlptr head) {
+	lvlptr totail = head;
+	int i = 0;
+	while (totail->next != NULL) {
+		totail = totail->next;
+		i++;
+	}
+	return i;
+}
+
+void Tail_ins(lvlptr &tail, lvlptr head) {		//genera un nuovo livello messo per ultimo e sposta tail in modo da puntare sempre l'utlimo
 	lvlptr q;
+	int length = bilist_length(head);
+	int diff = 0;
+	diff = length/8;
+	if (diff > 9) {
+		diff = 9;
+	}
 	q = new lvlbilist;
 	tail->next = q;
-	(q)->lvl = Level::Level(1, Level::Xfine(tail->lvl)+1, Level::Xfine(tail->lvl) + 10);	//nuovo livello da generare (manca ancora un modo per gestire la difficolta')
+	(q)->lvl = Level::Level(diff, Level::Xfine(tail->lvl)+1, Level::Xfine(tail->lvl) + 10);	//nuovo livello da generare (manca ancora un modo per gestire la difficolta')
 	(q)->prev = tail;
 	tail = q;
 }
-void Genero(lvlptr &tail) {		//fino a quando l'ultimo "chunk" non esce dallo schermo ne genera uno nuovo da mettere in fondo
+void Genero(lvlptr &tail, lvlptr head) {		//fino a quando l'ultimo "chunk" non esce dallo schermo ne genera uno nuovo da mettere in fondo
 	while (Level::Xfine(tail->lvl)<80) {
-		Tail_ins(tail);
+		Tail_ins(tail, head);
 	}
 }
 void KeepFscreenlvl(lvlptr &fscreenlvl) {		//mantiene fscreenlvl a puntare il primo "chunk" dello schermo
@@ -205,7 +221,7 @@ void UpdateScreenLvl(lvlptr fscreenlvl, lvlptr lscreenlvl, Bullet *bullets[], Pl
 	lvlptr ptr = fscreenlvl;
 	while (ptr != lscreenlvl->next) {			//scorre dal primo "chunk" dello schermo fino all'ultimo
 		for (int i = 0; i < 10; i++) {
-			if (Platform::ToDraw(*ptr->lvl.platforms[i])) {		//ridisegna ogni piattaforma da disegnare
+			if (Platform::ToDraw(*ptr->lvl.platforms[i])) {				//ridisegna ogni piattaforma da disegnare
 				Platform::Erase(*ptr->lvl.platforms[i]);
 				Platform::Draw(*ptr->lvl.platforms[i]);
 			}
@@ -226,10 +242,10 @@ void UpdateScreenLvl(lvlptr fscreenlvl, lvlptr lscreenlvl, Bullet *bullets[], Pl
 				Enemy::Draw(*ptr->lvl.enemies[i]);
 			}
 		}
-		for (int i = 0; i < 10; i++) {		//per ogni nemico
+		for (int i = 0; i < 10; i++) {		//per ogni nemico e piattaforma
 			for (int j = 0; j < 100; j++) {		//e per ogni proiettile sparato
 				if (Bullet::IsShot(*bullets[j])) {
-					Bullet::Collision(*ptr->lvl.enemies[i], *bullets[j], player);		//controlla se un proiettile occupa la stessa posizione di un nemico o del giocatore
+					Bullet::Collision(*ptr->lvl.enemies[i], *bullets[j], player, *ptr->lvl.platforms[i]);		//controlla se un proiettile occupa la stessa posizione di un nemico o del giocatore
 				}
 			}
 		}
@@ -267,7 +283,9 @@ int main() {
 	}
 	while (1 != 0) {	//game loop
 		KeepFrame(W_CONSOLE, H_CONSOLE);
-		Genero(tail);
+		LScroll(player, head);
+		RScroll(player, head);
+		Genero(tail, head);
 		KeepFscreenlvl(first_screen_lvl);
 		KeepLscreenlvl(last_screen_lvl);
 		UpdateScreenLvl(first_screen_lvl, last_screen_lvl, bullets, player);
@@ -282,7 +300,7 @@ int main() {
 		}
 		else { Enemy::Sparerai(enemy); }*/
 		if (GetKeyState(VK_SPACE) < 0) {		//se sto premendo la barra spaziatrice sparo il primo proiettile disponibile
-			for (int i = 0; i<100; i++) {
+			for (int i = 0; i<100; i ++) {
 				if (!(Bullet::IsShot(*bullets[i]))) {
 					Bullet::FireBullet(*bullets[i], player);
 					i = 100;
@@ -360,8 +378,6 @@ int main() {
 			Player::Move(player);
 			Player::Draw(player);
 		}
-		LScroll(player, head);
-		RScroll(player, head);
 		Sleep(50);
 	}
 }

@@ -5,14 +5,15 @@ private:
 	int _x;
 	int _y;
 	bool _isdead;
-	bool _shielded;
-
 public:
+	bool _shielded;
+	int _shieldcounter;
 	Player(int x, int y) {
 		_x = x;
 		_y = y;
 		_isdead = false;
 		_shielded = false;
+		_shieldcounter = 5;
 	}
 	static int X(Player player) { return player._x; }
 	static int Y(Player player) { return player._y; }
