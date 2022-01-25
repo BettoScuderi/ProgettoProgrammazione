@@ -10,6 +10,9 @@
 -in collisioni i nemici non sono da prendere in input direttamente ma basta la piattaforma e poi si usa platform._enemy
 -cambiare il sistema dei proiettili per renderlo meno laser beam, quindi sparo solo un proiettile ogni tot e non un flusso di proiettili, modificabile dal bonus
 -volendo cambiare i caratteri delle cose se funziona tutto comunque
+-fare un menù iniziale con anche magari un tutorial contenente i vari nemici e powerup
+-mettere a schermo punteggio/vita e difficoltà
+-schermata di Game Over
 */
 
 TO DO LIST
