@@ -1,18 +1,7 @@
 
 /*
 **************************TO DO**********************************
--Mettere i nemici che si generano sulle piattaforme
--Differenziare i nemici (con le spine, con lo scudo, che sparano)
--Mettere i powerup che si generano sulle piattaforme
--Differenziare i powerup (invincibilita', nuke, proiettili + veloci, punti/vita)
--fixare le scroll in modo da includere powerup e nemici sulle piattaforme
--fixare gli update in gioco.cpp perche' enemy adesso sono uno per piattaforma (prima erano liberi nel livello)\
 -in collisioni i nemici non sono da prendere in input direttamente ma basta la piattaforma e poi si usa platform._enemy
--cambiare il sistema dei proiettili per renderlo meno laser beam, quindi sparo solo un proiettile ogni tot e non un flusso di proiettili, modificabile dal bonus
--volendo cambiare i caratteri delle cose se funziona tutto comunque
--fare un menù iniziale con anche magari un tutorial contenente i vari nemici e powerup
--mettere a schermo punteggio/vita e difficoltà
--schermata di Game Over
 */
 
 TO DO LIST
