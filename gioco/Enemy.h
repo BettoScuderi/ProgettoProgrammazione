@@ -67,3 +67,12 @@ public:
 	}
 	static void Draw(Shieldy shieldy);
 };
+
+class Invincible :public Enemy {
+public:
+	Invincible(int x, int y) :Enemy(x, y) {
+		_char = 30;
+		_shootable = false;
+		_spiky = true;
+	}
+};

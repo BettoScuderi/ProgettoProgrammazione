@@ -20,7 +20,9 @@ struct lvlbilist {			//bilista di "chunk"
 	lvlbilist* next = NULL;
 };
 typedef lvlbilist* lvlptr;
-
+void GameMenu();
+void Tutorial();
+void GameLoop();
 char gioco::scan_output(SHORT x, SHORT y) {		//restituisce il carattere presente alle coordinate in input
 	LPWSTR buffer = new wchar_t[1];
 	DWORD dwChars;
@@ -54,8 +56,6 @@ void gioco::gotoxy(int x, int y) {		//posiziona il cursore alle coordinate in in
 }
 void GameOver(Player player);
 void init_console(int wConsole, int hConsole, Player& player) {		//inizializza la console
-	SetConsoleTitleW(L"ThaGame");
-	set_console_size(wConsole, hConsole);
 	int a = 0;
 	for (int i = 0; i <= wConsole; i++) {
 		gioco::set_console_color(FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
@@ -169,6 +169,97 @@ int assez() {
 	return z;
 }
 
+void Tutorial() {
+	system("cls");
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "COMANDI:"; 
+	gioco::gotoxy(W_CONSOLE - 28, 0);	
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "Premi Q per tornare al menu'"  << "\n" << "\n";
+		gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "W per andare sulla prima piattaforma sopra il giocatore\n";
+	cout << "A per spostare il giocatore a sinistra\n";
+	cout << "S per andare sulla prima piattaforma sotto il giocatore (o per terra)\n";
+	cout << "D per spostare il giocatore a destra\n";
+	cout << "Barra spaziatrice per sparare un proiettile\n";
+	cout << "Shift sinistro per usare lo scudo anti-proiettile (quando disponibile)\n";
+	cout << "\nNEMICI E POWERUP:\n" << "\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY); putchar(2);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Nemico che spara un proiettile ogni tanto\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY); putchar(15);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Nemico che ferisce al contatto e eliminabile solo con proiettili\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY); putchar(232);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Nemico con scudo anti-proiettile\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY); putchar(30);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Nemico invincibile che danneggia al contatto\n\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); putchar(185);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Powerup che rende utilizzabile lo scudo per parare 5 proiettili\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); putchar(175);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Powerup che aumenta la cadenza di fuoco\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); putchar(42);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Powerup che rende invincibili per un po' di tempo\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); putchar(3);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Powerup che aumenta di uno le vite\n";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); putchar(176);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	cout << "<--Powerup che uccide tutti i nemici visibili";
+	while (1 != 0) {
+		char back = _getch();
+		if (back == 'q' || back == 'Q') {
+			system("cls");
+			GameMenu();
+		}
+	}
+}
+
+void GameMenu() {
+	show_console_cursor(false);
+	SetConsoleTitleW(L"ThaGame");
+	set_console_size(W_CONSOLE, H_CONSOLE);
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	gioco::gotoxy((W_CONSOLE/2)-4, ((H_CONSOLE/2)-2));
+	cout << "1-PLAY\n";
+	gioco::gotoxy((W_CONSOLE / 2) - 6, (H_CONSOLE / 2));
+	cout << "2-TUTORIAL\n";
+	gioco::gotoxy((W_CONSOLE / 2) - 4, ((H_CONSOLE / 2) + 2));
+	cout << "3-EXIT\n";
+	while (1 != 0) {
+		char sel;
+		sel = _getch();
+		if (sel == '1') {
+			system("cls");
+			GameLoop();
+		}
+		else if (sel == '2') {
+			Tutorial();
+		}
+		else if (sel == '3') {
+			system("cls");
+			gioco::gotoxy((W_CONSOLE / 2) - 27, (H_CONSOLE / 2));
+			cout << "  A  "; Sleep(50);
+			cout << "  R  "; Sleep(50);
+			cout << "  R  "; Sleep(50);
+			cout << "  I  "; Sleep(50);
+			cout << "  V  "; Sleep(50);
+			cout << "  E  "; Sleep(50);
+			cout << "  D  "; Sleep(50);
+			cout << "  E  "; Sleep(50);
+			cout << "  R  "; Sleep(50);
+			cout << "  C  "; Sleep(50);
+			cout << "  I  "; Sleep(1000);
+			exit(0);
+		}
+	}
+}
+
 int bilist_length(lvlptr head) {
 	lvlptr totail = head;
 	int i = 0;
@@ -265,6 +356,7 @@ void UpdateScreenLvl(lvlptr fscreenlvl, lvlptr lscreenlvl, Bullet *bullets[], Pl
 								gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
 								gioco::gotoxy(Enemy::X(*lptr->lvl.platforms[j]->_enemy), Enemy::Y(*lptr->lvl.platforms[j]->_enemy));
 								putchar(176);
+								gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 								Sleep(200);
 							}
 						}
@@ -457,7 +549,7 @@ void GameLoop() {
 	GameOver(player);
 }
 int main() {
-	GameLoop();
+	GameMenu();
 }
 void GameOver(Player player) {
 	system("cls");
@@ -496,10 +588,16 @@ void GameOver(Player player) {
 	cout << "Hai fatto " << player._points << " punti!\n";
 	Sleep(500);
 	if (player._points == 0) {
-		cout << "Ci hai almeno provato? :(\n";
+		cout << "Hai almeno letto il tutorial? :(\n";
 	}
 	else if (player._points < 1000) {
-		cout << "Sei un po' scarso, giocami piu' spesso :)\n";
+		cout << "Sei un po' scarso, ti consiglio di andare a rileggere il tutorial :)\n";
+	}
+	else if(player._points < 99999) { 
+		cout << "Stai diventando bravo, per battermi dovrai fare piu' di 99999 punti \n"; 
+	}
+	else {
+		cout << "COME HAI FATTO A BATTERMI!? "; Sleep(500); cout << " . "; Sleep(500); cout << " . "; Sleep(500); cout << " . "; Sleep(500); cout << " GG \n";
 	}
 	Sleep(5000);
 	cout << "Vuoi riprovare ? Y/N ";
@@ -507,19 +605,7 @@ void GameOver(Player player) {
 		char risp = _getch();
 		if (risp == 'n' || risp == 'N') {
 			system("cls");
-			gioco::gotoxy((W_CONSOLE / 2) -27, (H_CONSOLE / 2));
-			cout << "  A  "; Sleep(50);
-			cout << "  R  "; Sleep(50);
-			cout << "  R  "; Sleep(50);
-			cout << "  I  "; Sleep(50);
-			cout << "  V  "; Sleep(50);
-			cout << "  E  "; Sleep(50);
-			cout << "  D  "; Sleep(50);
-			cout << "  E  "; Sleep(50);
-			cout << "  R  "; Sleep(50);
-			cout << "  C  "; Sleep(50);
-			cout << "  I  "; Sleep(1000);
-			exit(0);
+			GameMenu();
 		}
 		else if (risp == 'y' || risp == 'Y') {
 			system("cls");

@@ -36,7 +36,7 @@ void Enemy::Die(Enemy &enemy) {		//elimina il nemico
 	enemy._y = 0;
 }
 void Enemy::Collision(Enemy& enemy, Player& player) {
-	if (Player::X(player) == Enemy::X(enemy) && Player::Y(player) == Enemy::Y(enemy)) {
+	if (Player::X(player) == Enemy::X(enemy) && (Player::Y(player) == Enemy::Y(enemy) || Player::Y(player)+1 == Enemy::Y(enemy))) {
 		if (Enemy::Spiky(enemy) && Player::Killable(player)) {
 			Player::OneDown(player);
 		}

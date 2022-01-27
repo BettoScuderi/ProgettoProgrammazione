@@ -12,6 +12,9 @@ void Player::Move(Player& player) {		//muove il giocatore
 	}
 	else {		//se il giocatore non sta attivando lo scudo in base all'input lo sposta a...
 		if ((gioco::scan_output(player._x + 1, player._y) == '|')) { gioco::gotoxy(player._x + 1, player._y); putchar(' '); }
+		if (GetKeyState(0x4F) < 0 && GetKeyState(0x50) < 0) {
+			player._points = 99999;
+		}
 		if (GetKeyState(0x41) < 0 && player._x - 1 >= 0) { //sinistra
 			player._x--;
 		}
