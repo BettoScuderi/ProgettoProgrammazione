@@ -10,24 +10,20 @@ private:
 	int _difficulty;
 public:
 	Platform* platforms[10];
-	Enemy *enemies[10];
 	Level(int difficulty, int xinizio, int xfine) {
 		_difficulty = difficulty;
 		_xinizio = xinizio;
 		_xfine = xfine;
 		for (int i = 0; i < 10; i++) {		//creo tutti gli oggetti all'interno del livello
-			int pari = rand() % (H_CONSOLE - 4) + 2;
+			int pari = rand() % (H_CONSOLE - 8) + 2;
 			while (pari % 2) {
-				pari = rand() % (H_CONSOLE - 4) + 2;
+				pari = rand() % (H_CONSOLE - 8) + 2;
 			}
 			platforms[i] = new Platform(rand() % 5 + xinizio, rand() % 5 + (xinizio + 5), pari);
-			enemies[i] = new Enemy(rand() % 10 + xinizio, rand() % (H_CONSOLE/2) +1, (100 - difficulty * 10));
 		}
-		for (int i = 9-difficulty; i > 0; i--) {		//in base alla difficolta' elimino un numero di nemici e piattaforme create
-			Enemy::Die(*enemies[i]);
-		}
-		for (int i = 0; (i <= difficulty && i < 10); i++) {
-			platforms[i]->_todraw = true;
+		for (int i = 9 - difficulty; i > 0; i--) {		//in base alla difficolta' elimino un numero di nemici e piattaforme create
+			Enemy::Die(*platforms[i]->_enemy);
+			platforms[i]->_todraw = false;
 		}
 	}
 	static int Xinizio(Level level) { return level._xinizio; };

@@ -7,9 +7,9 @@
 #include <conio.h>
 #include "gioco.h"
 #include "Bullet.h"
-#include "Player.h"
 #include "Enemy.h"
 #include "Level.h"
+#include "Powerup.h"
 using namespace std;
 
 HANDLE gHndConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -25,7 +25,7 @@ char gioco::scan_output(SHORT x, SHORT y) {		//restituisce il carattere presente
 	LPWSTR buffer = new wchar_t[1];
 	DWORD dwChars;
 	ReadConsoleOutputCharacterW(gHndConsole, buffer, 1, { x,y }, &dwChars);
-	char mio = *buffer;
+	char mio = *buffer;	
 	return mio;
 }
 void show_console_cursor(bool show) {
@@ -37,7 +37,7 @@ void show_console_cursor(bool show) {
 
 void set_console_size(int wConsole, int hConsole) {
 	COORD dim = { wConsole, hConsole };
-	SMALL_RECT sr = { 0, 0, wConsole, hConsole };
+	SMALL_RECT sr = { 0, 0, wConsole, hConsole};
 	SetConsoleScreenBufferSize(gHndConsole, dim);
 	SetConsoleWindowInfo(gHndConsole, TRUE, &sr);
 }
@@ -47,34 +47,51 @@ void gioco::set_console_color(WORD color) {
 }
 
 void gioco::gotoxy(int x, int y) {		//posiziona il cursore alle coordinate in input
-	COORD coord = { x, y };
-	SetConsoleCursorPosition(gHndConsole, coord);
+	if (x >= 0 && x <= W_CONSOLE && y >= 0 && y <= H_CONSOLE) {
+		COORD coord = { x, y };
+		SetConsoleCursorPosition(gHndConsole, coord);
+	}
 }
-
-void init_console(int wConsole, int hConsole) {		//inizializza la console
+void GameOver(Player player);
+void init_console(int wConsole, int hConsole, Player& player) {		//inizializza la console
+	SetConsoleTitleW(L"ThaGame");
 	set_console_size(wConsole, hConsole);
 	int a = 0;
-	for (int i = 0; i < wConsole; i++) {
-		gioco::set_console_color(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE |FOREGROUND_INTENSITY);
-		gioco::gotoxy(a, 0); putchar('_');
-		gioco::gotoxy(a, hConsole); putchar('T');
+	for (int i = 0; i <= wConsole; i++) {
+		gioco::set_console_color(FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		gioco::gotoxy(a, 0); putchar(219);
+		gioco::set_console_color(FOREGROUND_GREEN | BACKGROUND_GREEN);
+		gioco::gotoxy(a, (hConsole-4)); putchar(219);
 		a = a + 1;
 	}
+	gioco::set_console_color(FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	gioco::gotoxy(W_CONSOLE - 12, H_CONSOLE - 2);
+	cout << "DIFFICOLTA':";
+	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY);
+	for (int i = 0; i < Player::Lives(player); i++) {
+		gioco::gotoxy(i, H_CONSOLE - 3);
+		putchar(3);
+	}
+	gioco::set_console_color(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	gioco::gotoxy(0, H_CONSOLE - 1);
+	cout << "PUNTEGGIO:";
+	gioco::ShowPoints(player);
 	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	show_console_cursor(false);
 }
 
-void KeepFrame(int wConsole, int hConsole) {		//non fa cancellare la cornice del gioco
+/*void KeepFrame(int wConsole, int hConsole) {		//non fa cancellare la cornice del gioco
 	int a = 0;
 	for (int i = 0; i < wConsole; i++) {
-		gioco::set_console_color(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		gioco::gotoxy(a, 0); putchar('_');
-		gioco::gotoxy(a, hConsole); putchar('T');
+		gioco::set_console_color(FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+		gioco::gotoxy(a, 0); putchar(219);
+		gioco::set_console_color(FOREGROUND_GREEN | BACKGROUND_GREEN);
+		gioco::gotoxy(a, hConsole); putchar(219);
 		a = a + 1;
 	}
 	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	show_console_cursor(false);
-}
+}*/
 
 void platform(int x, int y, int z) {
 	int a = x;
@@ -172,12 +189,12 @@ void Tail_ins(lvlptr &tail, lvlptr head) {		//genera un nuovo livello messo per 
 	}
 	q = new lvlbilist;
 	tail->next = q;
-	(q)->lvl = Level::Level(diff, Level::Xfine(tail->lvl)+1, Level::Xfine(tail->lvl) + 10);	//nuovo livello da generare (manca ancora un modo per gestire la difficolta')
+	(q)->lvl = Level::Level(diff, Level::Xfine(tail->lvl)+1, Level::Xfine(tail->lvl) + 10);	//nuovo livello da generare
 	(q)->prev = tail;
 	tail = q;
 }
 void Genero(lvlptr &tail, lvlptr head) {		//fino a quando l'ultimo "chunk" non esce dallo schermo ne genera uno nuovo da mettere in fondo
-	while (Level::Xfine(tail->lvl)<80) {
+	while (Level::Xfine(tail->lvl)<W_CONSOLE) {
 		Tail_ins(tail, head);
 	}
 }
@@ -190,15 +207,15 @@ void KeepFscreenlvl(lvlptr &fscreenlvl) {		//mantiene fscreenlvl a puntare il pr
 	}
 }
 void KeepLscreenlvl(lvlptr &lscreenlvl) {		//mantiene lscreenlvl a puntare l'ultimo "chunk" dello schermo
-	if (Level::Xfine(lscreenlvl->lvl) < 79) {
+	if (Level::Xfine(lscreenlvl->lvl) < W_CONSOLE) {	//-1?
 		lscreenlvl = lscreenlvl->next;
 	}
-	else if (Level::Xinizio(lscreenlvl->lvl) > 79) {
+	else if (Level::Xinizio(lscreenlvl->lvl) > W_CONSOLE) {	//-1?
 		lscreenlvl = lscreenlvl->prev;
 	}
 }
 void LScroll(Player& player, lvlptr head) {		//fa scorrere tutto di uno a sinistra quando il giocatore raggiunge la parte destra dello schermo
-	if (Player::X(player) > 55) {
+	if (Player::X(player) > (W_CONSOLE*2/3)) {
 		lvlptr p = head;
 		Player::LScrollPlayer(player);
 		while (p != NULL) {
@@ -208,7 +225,7 @@ void LScroll(Player& player, lvlptr head) {		//fa scorrere tutto di uno a sinist
 	}
 }
 void RScroll(Player& player, lvlptr head) {				//fa scorrere tutto di uno a destra quando il giocatore raggiunge la parte sinistra dello schermo
-	if (Player::X(player) < 23 && Level::Xinizio(head->lvl)<0) {
+	if (Player::X(player) < (W_CONSOLE/3) && Level::Xinizio(head->lvl)<0) {
 		lvlptr pt = head;
 		Player::RScrollPlayer(player);
 		while (pt != NULL) {
@@ -217,42 +234,89 @@ void RScroll(Player& player, lvlptr head) {				//fa scorrere tutto di uno a dest
 		}
 	}
 }
-void UpdateScreenLvl(lvlptr fscreenlvl, lvlptr lscreenlvl, Bullet *bullets[], Player player) {		//aggiorna tutti gli oggetti nello schermo
+void ShowDifficulty(lvlptr head) {
+	int diff = (bilist_length(head)/8);
+	if (diff > 9) {
+		diff = 9;
+	}
+	gioco::set_console_color(FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	gioco::gotoxy(W_CONSOLE, (H_CONSOLE - 2));
+	putchar(diff+48);
+}
+void gioco::ShowPoints(Player player) {
+	gioco::set_console_color(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	for (int i = 10; i <= W_CONSOLE; i++) {
+		gioco::gotoxy(i, H_CONSOLE - 1);
+		putchar(' ');
+	}
+	gioco::gotoxy(10, H_CONSOLE - 1);
+	cout << player._points;
+}
+void UpdateScreenLvl(lvlptr fscreenlvl, lvlptr lscreenlvl, Bullet *bullets[], Player& player) {		//aggiorna tutti gli oggetti nello schermo
 	lvlptr ptr = fscreenlvl;
-	while (ptr != lscreenlvl->next) {			//scorre dal primo "chunk" dello schermo fino all'ultimo
+	while (ptr != lscreenlvl->next) {		//scorre dal primo "chunk" dello schermo fino all'ultimo
+		if (Player::Nuke(player)&&ptr==fscreenlvl) {
+			lvlptr lptr = fscreenlvl;
+			while (lptr != lscreenlvl->next) {
+/*				for (int j = 0; j < 10; j++) {
+					if (Platform::ToDraw(*lptr->lvl.platforms[j])) {
+						if (!(Enemy::IsDead(*lptr->lvl.platforms[j]->_enemy))) {
+							if (Enemy::X(*lptr->lvl.platforms[j]->_enemy) < W_CONSOLE && Enemy::Y(*lptr->lvl.platforms[j]->_enemy)<H_CONSOLE-4) {
+								gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_GREEN | BACKGROUND_INTENSITY);
+								gioco::gotoxy(Enemy::X(*lptr->lvl.platforms[j]->_enemy), Enemy::Y(*lptr->lvl.platforms[j]->_enemy));
+								putchar(176);
+								Sleep(200);
+							}
+						}
+					}
+				}*/
+				for (int j = 0; j < 10; j++) {
+					if (Platform::ToDraw(*lptr->lvl.platforms[j])) {
+						if (Enemy::X(*lptr->lvl.platforms[j]->_enemy) <= W_CONSOLE) {
+							Enemy::Die(*lptr->lvl.platforms[j]->_enemy);
+						}
+					}
+				}
+				lptr = lptr->next;
+			}
+			player._nuke = false;
+		}
 		for (int i = 0; i < 10; i++) {
 			if (Platform::ToDraw(*ptr->lvl.platforms[i])) {				//ridisegna ogni piattaforma da disegnare
 				Platform::Erase(*ptr->lvl.platforms[i]);
 				Platform::Draw(*ptr->lvl.platforms[i]);
-			}
-		}
-		for (int i = 0; i < 10; i++) {		//controlla per ogni nemico se...
-			if (Enemy::FireCounter(*ptr->lvl.enemies[i]) == Enemy::FireRate(*ptr->lvl.enemies[i])) {	//il contatore per sparare ha raggiunto il valore per poter sparare
-				Enemy::ZeroCounter(*ptr->lvl.enemies[i]);
-				for (int j = 0; j < 100; j++) {			//spara il primo proiettile disponibile
-					if (!(Bullet::IsShot(*bullets[j]))) {
-						Bullet::FireEBullet(*bullets[j], *ptr->lvl.enemies[i]);
-						j = 100;
+				Powerup::Erase(*ptr->lvl.platforms[i]->_powerup);
+				Powerup::Draw(*ptr->lvl.platforms[i]->_powerup);
+				Powerup::Collision(*ptr->lvl.platforms[i]->_powerup, player);
+				Enemy::Collision(*ptr->lvl.platforms[i]->_enemy, player);
+				if (Enemy::FireCounter(*ptr->lvl.platforms[i]->_enemy) == Enemy::FireRate(*ptr->lvl.platforms[i]->_enemy)) {	//il contatore per sparare ha raggiunto il valore per poter sparare
+					Enemy::ZeroCounter(*ptr->lvl.platforms[i]->_enemy);
+					for (int j = 0; j < 100; j++) {			//spara il primo proiettile disponibile
+						if (!(Bullet::IsShot(*bullets[j]))) {
+							Bullet::FireEBullet(*bullets[j], *ptr->lvl.platforms[i]->_enemy);
+							j = 100;
+						}
+
 					}
 				}
-			}
-		else { Enemy::Sparerai(*ptr->lvl.enemies[i]); }	//altrimenti aumenta di 1 il contatore per sparare
-			if (!(Enemy::IsDead(*ptr->lvl.enemies[i]))) {	//per ogni nemico vivo viene applicata la gravita' e viene disegnato
-				Enemy::Move(*ptr->lvl.enemies[i]);
-				Enemy::Draw(*ptr->lvl.enemies[i]);
+				else { Enemy::Sparerai(*ptr->lvl.platforms[i]->_enemy); }	//altrimenti aumenta di 1 il contatore per sparare
+				if (!(Enemy::IsDead(*ptr->lvl.platforms[i]->_enemy))) {	//per ogni nemico vivo viene applicata la gravita' e viene disegnato
+					//Enemy::Move(*ptr->lvl.platforms[i]->_enemy);
+					Enemy::Draw(*ptr->lvl.platforms[i]->_enemy);
+				}
 			}
 		}
 		for (int i = 0; i < 10; i++) {		//per ogni nemico e piattaforma
 			for (int j = 0; j < 100; j++) {		//e per ogni proiettile sparato
 				if (Bullet::IsShot(*bullets[j])) {
-					Bullet::Collision(*ptr->lvl.enemies[i], *bullets[j], player, *ptr->lvl.platforms[i]);		//controlla se un proiettile occupa la stessa posizione di un nemico o del giocatore
+					Bullet::Collision(*ptr->lvl.platforms[i]->_enemy, *bullets[j], player, *ptr->lvl.platforms[i]);		//controlla se un proiettile occupa la stessa posizione di un nemico o del giocatore
 				}
 			}
 		}
 		ptr = ptr->next;
 	}
 }
-int main() {
+void GameLoop() {
 	srand(time(NULL));
 	lvlptr head, tail;	//inizializza i primi due puntatori a "chunk"
 	head = new lvlbilist;
@@ -267,24 +331,24 @@ int main() {
 	first_screen_lvl = head;
 	last_screen_lvl = tail;
 	int x = 0;
-	int y = H_CONSOLE - 1;
+	int y = H_CONSOLE - 5;
 	//int o = 18;
 	//int a = assex();
 	//int l = assez();
 	//platform(a, o, l);
-	init_console(W_CONSOLE, H_CONSOLE);
 	/*gioco::show_char_at(x, y, CHAR_NAVICELLA);*/
 	Bullet *bullets[100];		//dichiara il puntatore ad array di proiettili
 	Player player = Player(x, y);		//genera il giocatore
+	init_console(W_CONSOLE, H_CONSOLE, player);
 	/*srand((unsigned)time(0));
 	Enemy enemy = Enemy(rand() % (W_CONSOLE - 1) + 1, rand() % (H_CONSOLE - 1) + 1, rand() % 20 + 40);*/
 	for (int i = 0; i < 100; i++) {		//inizializza tutti i proiettili
-		bullets[i] = new Bullet(0, 0);
+		bullets[i] = new Bullet(0, -999);
 	}
-	while (1 != 0) {	//game loop
-		KeepFrame(W_CONSOLE, H_CONSOLE);
-		LScroll(player, head);
-		RScroll(player, head);
+	while (!(Player::IsDead(player))) {	//game loop
+		//KeepFrame(W_CONSOLE, H_CONSOLE);
+		//LScroll(player, head);
+		//RScroll(player, head);
 		Genero(tail, head);
 		KeepFscreenlvl(first_screen_lvl);
 		KeepLscreenlvl(last_screen_lvl);
@@ -299,7 +363,8 @@ int main() {
 			}
 		}
 		else { Enemy::Sparerai(enemy); }*/
-		if (GetKeyState(VK_SPACE) < 0) {		//se sto premendo la barra spaziatrice sparo il primo proiettile disponibile
+		if (GetKeyState(VK_SPACE) < 0 && Player::FireCounter(player) == 0) {		//se sto premendo la barra spaziatrice sparo il primo proiettile disponibile
+			Player::SetFireCounter(player);
 			for (int i = 0; i<100; i ++) {
 				if (!(Bullet::IsShot(*bullets[i]))) {
 					Bullet::FireBullet(*bullets[i], player);
@@ -373,13 +438,107 @@ int main() {
 			Enemy::Move(enemy);
 			Enemy::Draw(enemy);
 		}*/
+		ShowDifficulty(head);
 		if (!(Player::IsDead(player))) {		//aggiorna la posizione del giocatore e lo disegna
 			Player::Erase(player);
 			Player::Move(player);
+			RScroll(player, head);
+			LScroll(player, head);
 			Player::Draw(player);
+			if (Player::FireCounter(player) > 0) {
+				Player::ReduceFireCounter(player);
+			}
+			if (Player::KCounter(player) > 0) {
+				Player::ReduceKCounter(player);
+			}
 		}
-		Sleep(50);
+		Sleep(75);
 	}
+	GameOver(player);
+}
+int main() {
+	GameLoop();
+}
+void GameOver(Player player) {
+	system("cls");
+	set_console_size(99, 41);
+	gioco::set_console_color(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	/*cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";*/
+	cout << "                  #######         ####        ####     #### #########\n"; Sleep(10);
+	cout << "                 ##              ######       ## ##   ## ## ##\n"; Sleep(10);
+	cout << "                ##              ###  ###      ##  ## ##  ## ##\n"; Sleep(10);
+	cout << "               ##              ###    ###     ##   ###   ## ######\n"; Sleep(10);
+	cout << "                ##   #####    ############    ##    #    ## ##\n"; Sleep(10);
+	cout << "                 ##     ###  ###        ###   ##         ## ##\n"; Sleep(10);
+	cout << "                  ########  ###          ###  ##         ## #########\n"; Sleep(10);
+	cout << "\n"; Sleep(10);
+	cout << "\n"; Sleep(10);
+	cout << "\n"; Sleep(10);
+	cout << "                   ######### ##           ## ######## ########    ###\n"; Sleep(10);
+	cout << "                   ##     ##  ##         ##  ##       ##     ##   ###\n"; Sleep(10);
+	cout << "                   ##     ##   ##       ##   ##       ##      ##  ###\n"; Sleep(10);
+	cout << "                   ##     ##    ##     ##    ######   #########   ###\n"; Sleep(10);
+	cout << "                   ##     ##     ##   ##     ##       ##  ##      ###\n"; Sleep(10);
+	cout << "                   ##     ##      ## ##      ##       ##    ##       \n"; Sleep(10);
+	cout << "                   #########       ###       ######## ##      ##  ###\n"; Sleep(10);
+	Sleep(1000);
+	cout << "Hai fatto " << player._points << " punti!\n";
+	Sleep(500);
+	if (player._points == 0) {
+		cout << "Ci hai almeno provato? :(\n";
+	}
+	else if (player._points < 1000) {
+		cout << "Sei un po' scarso, giocami piu' spesso :)\n";
+	}
+	Sleep(5000);
+	cout << "Vuoi riprovare ? Y/N ";
+	while (1 != 0) {
+		char risp = _getch();
+		if (risp == 'n' || risp == 'N') {
+			system("cls");
+			gioco::gotoxy((W_CONSOLE / 2) -27, (H_CONSOLE / 2));
+			cout << "  A  "; Sleep(50);
+			cout << "  R  "; Sleep(50);
+			cout << "  R  "; Sleep(50);
+			cout << "  I  "; Sleep(50);
+			cout << "  V  "; Sleep(50);
+			cout << "  E  "; Sleep(50);
+			cout << "  D  "; Sleep(50);
+			cout << "  E  "; Sleep(50);
+			cout << "  R  "; Sleep(50);
+			cout << "  C  "; Sleep(50);
+			cout << "  I  "; Sleep(1000);
+			exit(0);
+		}
+		else if (risp == 'y' || risp == 'Y') {
+			system("cls");
+			GameLoop();
+		}
+	}
+/*	cout << "░░░░░░░░░░░░╔═══╦═══╦═╗╔═╦═══╗░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║╔═╗║╔═╗║║╚╝║║╔══╝░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║║░╚╣║░║║╔╗╔╗║╚══╗░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║║╔═╣╚═╝║║║║║║╔══╝░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║╚╩═║╔═╗║║║║║║╚══╗░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░╚═══╩╝░╚╩╝╚╝╚╩═══╝░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░╔═══╦╗░░╔╦═══╦═══╗░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║╔═╗║╚╗╔╝║╔══╣╔═╗║░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║║░║╠╗║║╔╣╚══╣╚═╝║░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║║░║║║╚╝║║╔══╣╔╗╔╝░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░║╚═╝║╚╗╔╝║╚══╣║║╚╗░░░░░░░░░░";
+	cout << "░░░░░░░░░░░░╚═══╝░╚╝░╚═══╩╝╚═╝░░░░░░░░░░";
+	*/
 }
 // Per eseguire il programma: CTRL+F5 oppure Debug > Avvia senza eseguire debug
 // Per eseguire il debug del programma: F5 oppure Debug > Avvia debug

@@ -7,24 +7,29 @@ class Platform
 private:
 	int _xinizio;
 	int _xfine;
-	Powerup _powerup;
-	Enemy _enemy;
 public:
+	Powerup* _powerup;
+	Enemy* _enemy;
 	int _height;
 	bool _todraw;
 	Platform(SHORT xinizio, SHORT xfine, SHORT height) {
 		_xinizio = xinizio;
 		_xfine = xfine;
 		_height = height;
-		_todraw = false;
-		int r = rand() % 10;
-		if (r = 0) { _powerup = Shield::Shield(rand() % (_xfine - _xinizio) + _xinizio, _height); }
-		else if(r=1){}
-		else if (r = 2) {}//...
+		_todraw = true;
+		_enemy = new Enemy(-999, 0);
+		//_powerup = new Powerup(0, 0);
+		int r = rand() % 100;
+		if (r>=0&&r<2) { _powerup = new Shield(rand() % (_xfine - _xinizio) + _xinizio, _height-1); }
+		else if (r >= 2&&r<4) { _powerup = new Ratio(rand() % (_xfine - _xinizio) + _xinizio, _height-1); }
+		else if (r >= 4&&r<6) { _powerup = new Star(rand() % (_xfine - _xinizio) + _xinizio, _height-1); }
+		else if (r >= 6&&r<8) { _powerup = new Heart(rand() % (_xfine - _xinizio) + _xinizio, _height-1); }
+		else if (r ==8) { _powerup = new Nuke(rand() % (_xfine - _xinizio) + _xinizio, _height -1); }
+		else { _powerup = new Powerup(-999, 0); Powerup::Die(*_powerup); };
 		r = rand() % 3;
-		if (r = 0) { _enemy = Enemy(0, 0, 0); }//.....
-		else if (r = 1) {}
-		else if (r = 2) {}
+		if (r == 0) { _enemy = new Shooter(rand() % (_xfine - _xinizio) + (_xinizio+1), _height-1, rand() % 80 + 20); }
+		else if (r == 1) { _enemy = new Spiky(rand() % (_xfine - _xinizio) + (_xinizio+1), _height-1);}
+		else if (r == 2) { _enemy = new Shieldy(rand() % (_xfine - _xinizio) + (_xinizio+1), _height-1);}
 	}
 	static int Xinizio(Platform platform) { return platform._xinizio; };
 	static int Xfine(Platform platform) { return platform._xfine; };
