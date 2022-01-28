@@ -5,7 +5,7 @@ void Platform::Draw(Platform platform) {		//disegna la piattaforma da disegnare
 	if (platform._xfine > -1 && platform._xinizio <= W_CONSOLE) {
 		if (Platform::ToDraw(platform)) {
 			gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-			for (int i = 0; i <= (platform._xfine - platform._xinizio); i++) {
+			for (int i = 0; i <= (platform._xfine - platform._xinizio); i++) {		//disegna tutti i pezzi della piattaforma che sono visibili
 				if (platform._xinizio + i > -1 && platform._xinizio + i <= W_CONSOLE) {
 					gioco::gotoxy(platform._xinizio + i, platform._height);
 					putchar(223);

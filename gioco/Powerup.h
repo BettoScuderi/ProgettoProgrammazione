@@ -28,69 +28,47 @@ public:
 	static void LScrollPowerup(Powerup& powerup);
 };
 
-class Shield:public Powerup {
+class Shield:public Powerup {	//power-up scudo
 public:
 	Shield(int x, int y) :Powerup(x, y) {
 		_char = 185;
 		_bonus = 1;
 	}
-	static void Draw(Shield shield);
-	static void Collision(Shield& shield, Player& player);
-	static void Bonus(Player& player) { player._shielded = true; }
+	static void Bonus(Player& player) { player._shielded = true; }		//da' al giocatore la possibilita' di attivare lo scudo con shift
 };
 
-class Ratio:public Powerup {
+class Ratio:public Powerup {		//power-up ratio
 public:
 	Ratio(int x, int y) :Powerup(x, y) {
 		_char = 175;
 		_bonus = 2;
 	}
-	static void Draw(Ratio ratio);
-	static void Collision(Ratio& ratio, Player& player);
 	static void Bonus(Player& player);
 };
 
-class Star :public Powerup {
+class Star :public Powerup {		//power-up invincibilta'
 public:
 	Star(int x, int y) :Powerup(x, y) {
 		_char = 42;
 		_bonus = 3;
 	}
-	static void Draw(Star star);
-	static void Collision(Star& star, Player& player);
 	static void Bonus(Player& player);
 };
 
-class Heart :public Powerup {
+class Heart :public Powerup {		//power-up vita
 public:
 	Heart(int x, int y) :Powerup(x, y) {
 		_char = 3;
 		_bonus = 4;
 	}
-	static void Draw(Heart heart);
-	static void Collision(Heart& heart, Player& player);
 	static void Bonus(Player& player);
 };
 
-class Nuke :public Powerup {
+class Nuke :public Powerup {		//power-up bomba
 public:
 	Nuke(int x, int y) :Powerup(x, y) {
 		_char = 176;
 		_bonus = 5;
 	}
-	static void Draw(Nuke nuke);
-	static void Collision(Nuke& nuke, Player& player);
 	static void Bonus(Player& player) { player._nuke = true; };
 };
-/*
-NEMICI
-		L '\x1e'
-L '\x111' 0 L'\x110'
-
-POWER UP
-* Stella di Super Mario
-@ Ricarica proiettili/aumento cadenza proiettili
-$ scudo
-L'\3' punti/vita
-8 killa tutti nemici visibili
-*/

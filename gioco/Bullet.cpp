@@ -31,7 +31,7 @@ void Bullet::Die(Bullet& bullet) {		//elimina il proiettile
 	bullet._y = 0;
 }
 void Bullet::Collision(Enemy& enemy, Bullet& bullet, Player& player, Platform platform) {		//controlla eventuali collisioni fra il proiettile e un nemico o un giocatore
-	if (Enemy::X(enemy) == Bullet::X(bullet) && Enemy::Y(enemy) == Bullet::Y(bullet) && !(Bullet::IsEBullet(bullet))) {		//se il proiettile del giocatore colpisce un nemico viene eliminato
+	if (Enemy::X(enemy) == Bullet::X(bullet) && Enemy::Y(enemy) == Bullet::Y(bullet) && !(Bullet::IsEBullet(bullet))) {		//se il proiettile del giocatore colpisce un nemico "sparabile" viene eliminato e vengono assegnati i punti
 		Bullet::Die(bullet);
 		if (Enemy::Shootable(enemy)) {
 			Enemy::Die(enemy);
@@ -39,16 +39,16 @@ void Bullet::Collision(Enemy& enemy, Bullet& bullet, Player& player, Platform pl
 			gioco::ShowPoints(player);
 		}
 	}
-	if (Player::X(player) == Bullet::X(bullet) && Player::Y(player) == Bullet::Y(bullet) && Bullet::IsEBullet(bullet)&&Player::Killable(player)) {		//se il proiettile di un nemico colpisce il giocatore mentre non ha lo scudo viene eliminato e il giocatore perde vita/punti
+	if (Player::X(player) == Bullet::X(bullet) && Player::Y(player) == Bullet::Y(bullet) && Bullet::IsEBullet(bullet)&&Player::Killable(player)) {		//se il proiettile di un nemico colpisce il giocatore mentre non ha lo scudo viene eliminato e il giocatore perde vita
 		Bullet::Die(bullet);
 		Player::OneDown(player);
 	}
-	if (Platform::ToDraw(platform)) {
+	if (Platform::ToDraw(platform)) {		//elimina i proiettili che si schiantano contro una piattaforma
 		if (Platform::Xinizio(platform) == Bullet::X(bullet)+1 && Platform::Height(platform) == Bullet::Y(bullet) || (Platform::Xfine(platform) == Bullet::X(bullet)-1 && Platform::Height(platform) == Bullet::Y(bullet))) {
 			Bullet::Die(bullet);
 		}
 	}
-	if (gioco::scan_output(bullet._x - 1, bullet._y) == '|') {
+	if (gioco::scan_output(bullet._x - 1, bullet._y) == '|') {		//diminuisce il counter dello scudo se il giocatore ha parato il colpo
 		Bullet::Die(bullet);
 		player._shieldcounter--;
 		if (player._shieldcounter == 0) {

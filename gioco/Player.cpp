@@ -4,7 +4,7 @@
 #include<iostream>
 
 void Player::Move(Player& player) {		//muove il giocatore
-	if (GetKeyState(VK_LSHIFT) < 0 && player._shielded) {		//se shift e' premuto attiva lo scudo del giocatore
+	if (GetKeyState(VK_LSHIFT) < 0 && player._shielded) {		//se shift e' premuto attiva lo scudo del giocatore (se disponibile)
 		gioco::set_console_color(FOREGROUND_INTENSITY);
 		gioco::gotoxy(player._x + 1, player._y);
 		putchar('|');
@@ -12,7 +12,7 @@ void Player::Move(Player& player) {		//muove il giocatore
 	}
 	else {		//se il giocatore non sta attivando lo scudo in base all'input lo sposta a...
 		if ((gioco::scan_output(player._x + 1, player._y) == '|')) { gioco::gotoxy(player._x + 1, player._y); putchar(' '); }
-		if (GetKeyState(0x4F) < 0 && GetKeyState(0x50) < 0) {
+		if (GetKeyState(0x4F) < 0 && GetKeyState(0x50) < 0) {		//cheat "O+P" per impostare i punti a 99999 e quindi attivare la frase simpatica nella schermata di game over
 			player._points = 99999;
 		}
 		if (GetKeyState(0x41) < 0 && player._x - 1 >= 0) { //sinistra
@@ -23,15 +23,15 @@ void Player::Move(Player& player) {		//muove il giocatore
 		}
 		if (GetKeyState(0x57) < 0) {  //su
 			if (player._y == H_CONSOLE - 1 ) {
-				while (player._y == (H_CONSOLE-1)|| gioco::scan_output(player._x, player._y + 1) == ' ' && player._y>1) {
+				while (player._y == (H_CONSOLE-5)|| gioco::scan_output(player._x, player._y + 1) == ' ' && player._y>1) {		//se sono a terra o finche' non ho raggiunto una piattaforma vado in su di 1
 					player._y--;
 				}
 			}
 			else {
-				while ( gioco::scan_output(player._x, player._y - 1) == ' ' && player._y > 1) {
+				while ( gioco::scan_output(player._x, player._y - 1) == ' ' && player._y > 1) {		//se sono gia' su una piattaforma finche' non ho una piattaforma sopra salgo...
 					player._y--;
 			}
-				if (player._y > 2) {
+				if (player._y > 2) {		//raggiunta la piattaforma ci vado sopra
 					player._y = player._y - 2;
 				}
 			}
@@ -54,7 +54,7 @@ void Player::Erase(Player player) {		//cancella il carattere del giocatore
 	gioco::gotoxy(player._x, player._y);
 	putchar(' ');
 }
-void Player::OneUp(Player& player) {
+void Player::OneUp(Player& player) {		//aumenta le vite di uno e aggiorna i cuori nell'interfaccia
 	player._lives++;
 	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_INTENSITY);
 	for (int i = 0; i < player._lives; i++) {
@@ -62,7 +62,7 @@ void Player::OneUp(Player& player) {
 		putchar(3);
 	}
 }
-void Player::OneDown(Player& player) {
+void Player::OneDown(Player& player) {		//diminuisce le vite di uno e se arrivano e zero il giocator muore
 	player._lives--; 
 	SetKCounter(player, 20);
 	gioco::gotoxy(player._lives, H_CONSOLE - 3);
@@ -81,46 +81,3 @@ void Player::RScrollPlayer(Player& player) {		//sposta il giocatore di uno a des
 	player._x++;
 	Draw(player);
 }
-/*
-	if (GetKeyState(VK_LEFT) < 0 && gravsx) {
-
-		x = x - 1 >= 0 ? x - 1 : x;							//sinistra
-		y = y + 2 < H_CONSOLE ? y + 2 : y;
-		gioco::gotoxy(x + 1, y - 2); putchar(' ');
-		gioco::show_char_at(x, y, CHAR_NAVICELLA);
-
-	}
-	else if (GetKeyState(VK_LEFT) < 0 && (!gravsx)) {
-
-		x = x - 1 >= 0 ? x - 1 : x;
-		gioco::show_char_at(x, y, CHAR_NAVICELLA);
-
-	}
-	else if (GetKeyState(VK_RIGHT) < 0 && gravdx) {
-
-		x = x + 1 < W_CONSOLE ? x + 1 : x;                  //destra
-		y = y + 2 < H_CONSOLE ? y + 2 : y;
-		gioco::gotoxy(x - 1, y - 2); putchar(' ');
-		gioco::show_char_at(x, y, CHAR_NAVICELLA);
-
-	}
-	else if (GetKeyState(VK_RIGHT) < 0 && (!gravdx)) {
-
-		x = x + 1 < W_CONSOLE ? x + 1 : x;
-		gioco::show_char_at(x, y, CHAR_NAVICELLA);
-
-	}
-	else if (GetKeyState(VK_UP) < 0 && jump) {
-
-		y = y - 2 >= 1 ? y - 2 : y;
-		gioco::show_char_at(x, y, CHAR_NAVICELLA);//su 
-
-	}
-	else if (GetKeyState(VK_DOWN) < 0) {
-
-		y = y + 2 < H_CONSOLE ? y + 2 : y;
-		gioco::show_char_at(x, y, CHAR_NAVICELLA);		//giù
-
-	}
-}
-*/

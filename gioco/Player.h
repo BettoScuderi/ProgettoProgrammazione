@@ -45,10 +45,10 @@ public:
 	static void Move(Player &player);
 	static void Draw(Player player);
 	static void Erase(Player player);
-	static void SetFireCounter(Player& player) { player._firecounter = player._fireratio; }
-	static void ReduceFireCounter(Player& player) { player._firecounter--; }
-	static void SetKCounter(Player& player, int kcounter) { player._kcounter = kcounter;	player._killable = false; player._charpl = 1;}
-	static void ReduceKCounter(Player& player) { player._kcounter--; if (player._kcounter == 0) { player._killable = true; player._charpl = 2; } }
+	static void SetFireCounter(Player& player) { player._firecounter = player._fireratio; }		//aggiorna il counter in base alla cadenza di fuoco attuale
+	static void ReduceFireCounter(Player& player) { player._firecounter--; }		//riduce di uno il counter di fuoco
+	static void SetKCounter(Player& player, int kcounter) { player._kcounter = kcounter;	player._killable = false; player._charpl = 1;}		//rende invincibili per kcounter cicli di GameLoop cambiando anche il carattere del giocatore per quei cicli
+	static void ReduceKCounter(Player& player) { player._kcounter--; if (player._kcounter == 0) { player._killable = true; player._charpl = 2; } } //riduce il counter dell'invincibilita' e eventualmente fa tornare normale il giocatore
 	static void OneUp(Player& player);
 	static void OneDown(Player& player);
 	static void LScrollPlayer(Player &player);

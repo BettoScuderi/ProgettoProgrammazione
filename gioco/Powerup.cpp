@@ -2,19 +2,19 @@
 #include "gioco.h"
 #include <iostream>
 
-void Powerup::Collision(Powerup& powerup, Player& player) {
+void Powerup::Collision(Powerup& powerup, Player& player) {	//se il giocatore in input occupa le stessa casella del power-up allora ottiene il bonus e il power-up viene eliminato
 	if (Powerup::X(powerup) == Player::X(player) && (Powerup::Y(powerup) == Player::Y(player)|| Powerup::Y(powerup) == (Player::Y(player)+1)) && !(Powerup::IsDead(powerup))) {
 		Powerup::Bonus(powerup, player);
 		Powerup::Die(powerup);
 	}
 }
-void Powerup::Die(Powerup& powerup) {
+void Powerup::Die(Powerup& powerup) {		//elimina il power-up
 	Powerup::Erase(powerup);
 	powerup._isdead = true;
 	powerup._x = -999;
 	powerup._y = 0;
 }
-void Powerup::Draw(Powerup powerup) {
+void Powerup::Draw(Powerup powerup) {		//disegna il power-up
 	if (powerup._x > -1 && powerup._x <= W_CONSOLE && !(powerup._isdead)) {
 		gioco::gotoxy(powerup._x, powerup._y);
 		putchar(' ');
@@ -24,17 +24,17 @@ void Powerup::Draw(Powerup powerup) {
 		gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	}
 }
-void Powerup::Erase(Powerup powerup) {
+void Powerup::Erase(Powerup powerup) {		//cancella il carattere del power-up
 	if (powerup._x > -1 && powerup._x <= W_CONSOLE) {
 		gioco::gotoxy(powerup._x, powerup._y);
 		putchar(' ');
 	}
 }
-void Powerup::Bonus(Powerup& powerup, Player& player) {
+void Powerup::Bonus(Powerup& powerup, Player& player) {		//in base al tipo di power-up chiama la funzione Bonus associata, aggiorna anche l'interfaccia dei punti
 	player._points = player._points + 10;
 	gioco::ShowPoints(player);
 	if (powerup._bonus == 1) {
-		player._shielded = true;
+		Shield::Bonus(player);
 	}
 	else if (powerup._bonus == 2) {
 		Ratio::Bonus(player);
@@ -49,7 +49,7 @@ void Powerup::Bonus(Powerup& powerup, Player& player) {
 		Nuke::Bonus(player);
 	}
 }
-void Powerup::RScrollPowerup(Powerup& powerup) {
+void Powerup::RScrollPowerup(Powerup& powerup) {		//fa scorrere il power-up di uno a destra/sinistra
 	Powerup::Erase(powerup);
 	powerup._x++;
 	Powerup::Draw(powerup);
@@ -60,67 +60,16 @@ void Powerup::LScrollPowerup(Powerup& powerup) {
 	Powerup::Draw(powerup);
 }
 
-
-
-void Shield::Draw(Shield shield) {
-	Powerup::Draw(shield);
-	putchar(shield._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-
-void Shield::Collision(Shield& shield, Player& player) {
-	Powerup::Collision(shield, player);
-	Shield::Bonus(player);
-}
-
-
-void Ratio::Draw(Ratio ratio) {
-	Powerup::Draw(ratio);
-	putchar(ratio._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-void Ratio::Collision(Ratio& ratio, Player& player) {
-	Powerup::Collision(ratio, player);
-	Ratio::Bonus(player);
-}
-void Ratio::Bonus(Player& player) {
+void Ratio::Bonus(Player& player) {		//aumenta la cadenza di fuoco
 	if (Player::FireRatio(player) > 4) {
 		player._fireratio = player._fireratio - 3;
 	}
 }
 
-void Star::Draw(Star star) {
-	Powerup::Draw(star);
-	putchar(star._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-void Star::Collision(Star& star, Player& player) {
-	Powerup::Collision(star, player);
-	Star::Bonus(player);
-}
-void Star::Bonus(Player& player) {
+void Star::Bonus(Player& player) {		//rende invincibili per 150 cicli del GameLoop
 	Player::SetKCounter(player, 150);
 }
 
-void Heart::Draw(Heart heart) {
-	Powerup::Draw(heart);
-	putchar(heart._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-void Heart::Collision(Heart& heart, Player& player) {
-	Powerup::Collision(heart, player);
-	Heart::Bonus(player);
-}
-void Heart::Bonus(Player& player) {
+void Heart::Bonus(Player& player) {		//aumenta di uno le vite del giocatore
 	Player::OneUp(player);
-}
-
-void Nuke::Draw(Nuke nuke) {
-	Powerup::Draw(nuke);
-	putchar(nuke._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-void Nuke::Collision(Nuke& nuke, Player& player) {
-	Powerup::Collision(nuke, player);
-	Nuke::Bonus(player);
 }

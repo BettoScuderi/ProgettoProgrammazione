@@ -13,15 +13,6 @@ void Enemy::Draw(Enemy &enemy) {		//disegna il nemico se si trova nello schermo
 		gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	}
 }
-/*void Enemy::Move(Enemy& enemy) {		//applica la gravita' al nemico se si trova nello schermo
-	if (enemy._x > 0 && enemy._x < 79) {
-		while (gioco::scan_output(enemy._x, enemy._y + 1) == ' ') {
-			gioco::gotoxy(enemy._x, enemy._y);
-			putchar(' ');
-			enemy._y++;
-		}
-	}
-}*/
 void Enemy::Erase(Enemy& enemy) {		//elimina il carattere del nemico se si trova nello schermo
 	if (enemy._x > -1 && enemy._x <= W_CONSOLE) {
 		gioco::gotoxy(enemy._x, enemy._y);
@@ -35,7 +26,7 @@ void Enemy::Die(Enemy &enemy) {		//elimina il nemico
 	enemy._x = -999;
 	enemy._y = 0;
 }
-void Enemy::Collision(Enemy& enemy, Player& player) {
+void Enemy::Collision(Enemy& enemy, Player& player) {		//controlla se il nemico e il giocatore si trovano nella stessa casella e in base al tipo di nemico ferisce il giocatore o elimina il nemico aggiornando i punti
 	if (Player::X(player) == Enemy::X(enemy) && (Player::Y(player) == Enemy::Y(enemy) || Player::Y(player)+1 == Enemy::Y(enemy))) {
 		if (Enemy::Spiky(enemy) && Player::Killable(player)) {
 			Player::OneDown(player);
@@ -60,22 +51,4 @@ void Enemy::RScrollEnemy(Enemy& enemy) {		//sposta il nemico di uno a destra
 void Enemy::Sparerai(Enemy& enemy) {		//aumenta di 1 il contatore per sparare del nemico se si trova nello schermo
 	if (enemy._x > -1 && enemy._x <= W_CONSOLE)
 		enemy._firecounter++;
-}
-
-void Shooter::Draw(Shooter shooter) {
-	Enemy::Draw(shooter);
-	putchar(shooter._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-
-void Spiky::Draw(Spiky spiky) {
-	Enemy::Draw(spiky);
-	putchar(spiky._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-
-void Shieldy::Draw(Shieldy shieldy) {
-	Enemy::Draw(shieldy);
-	putchar(shieldy._char);
-	gioco::set_console_color(FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }

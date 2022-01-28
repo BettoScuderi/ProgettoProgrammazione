@@ -19,7 +19,7 @@ public:
 			while (pari % 2) {
 				pari = rand() % (H_CONSOLE - 8) + 2;
 			}
-			platforms[i] = new Platform(rand() % 3 + xinizio, rand() % 5 + (xinizio + 5), pari);
+			platforms[i] = new Platform(rand() % 3 + xinizio, rand() % 5 + (xinizio + 5), pari);		//fa in modo che ogni piattaforma abbia almeno una casella di distanza in verticale tra una e l'altra
 		}
 		for (int i = 9 - difficulty; i > 0; i--) {		//in base alla difficolta' elimino un numero di nemici e piattaforme create
 			Enemy::Die(*platforms[i]->_enemy);
@@ -32,13 +32,4 @@ public:
 	static void RScrollLevel(Level& level);
 	static void LScrollLevel(Level& level);
 };
-
-
-/* POWER UP
-* Stella di Super Mario
-@ Ricarica proiettili/aumento cadenza proiettili
-$ scudo
-L'\3' punti
-8 killa tutti nemici visibili
-*/
 
